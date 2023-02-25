@@ -1,12 +1,12 @@
 import React from "react";
 
-const InCompleteTodo = (props) => {
+const InCompleteTodo = (props: { incompleteTodos: any; completeCLick: any; deleteClick: any; }) => {
     const { incompleteTodos, completeCLick, deleteClick } = props;
     return (
         <div className="incomplete_area">
             <p className="title">未完了のTODO</p>
             <ul>
-                {incompleteTodos.map((todo, index) => {
+                {incompleteTodos.map((todo: React.Key, index: any) => {
                     return (
                         <div key={todo} className="list_row">
                             <li>{todo}</li>

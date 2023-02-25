@@ -9,7 +9,7 @@ const App = () => {
   const [incompleteTodos, setIncompleteTodos] = useState(["aaa"]);
   const [completeTodos, setCompleteTodos] = useState(["aaa"]);
 
-  const onChangeTodoText = (event) => setTodoText(event.target.value);
+  const onChangeTodoText = (event: { target: { value: React.SetStateAction<string>; }; }) => setTodoText(event.target.value);
 
   const addTask = () => {
     if (todoText === '') return;
@@ -18,13 +18,13 @@ const App = () => {
     setTodoText('');
   };
 
-  const deleteTask = (index) => {
+  const deleteTask = (index: number) => {
     const newTodos = [...incompleteTodos];
     newTodos.splice(index, 1);
     setIncompleteTodos(newTodos);
   }
 
-  const completeTask = (index) => {
+  const completeTask = (index: number) => {
     const newInCompleteTodos = [...incompleteTodos];
     newInCompleteTodos.splice(index, 1);
 
@@ -33,7 +33,7 @@ const App = () => {
     setCompleteTodos(newCompleteTodos);
   }
 
-  const undoTask = (index) => {
+  const undoTask = (index: number) => {
     const newCompleteTodos = [...completeTodos];
     newCompleteTodos.splice(index, 1);
 
