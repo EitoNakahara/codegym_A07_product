@@ -1,0 +1,11 @@
+printWidth: 100 # 折り返し幅
+tabWidth: 2 # インデントのサイズ
+semi: false # 行末にセミコロンなし
+singleQuote: true # シングルクォーテーションで囲む
+quoteProps: 'as-needed' # オブジェクトのプロパティ引用符
+bracketSpacing: true # 要素とカッコの間のスペース
+bracketSameLine: false # 閉じカッコを同一行にしない
+htmlWhitespaceSensitivity: 'ignore' # HTML 空白の感度  CSSのdisplayプロパティのデフォルト値を尊重
+endOfLine: 'auto' # 改行コードの指定 既存の行末を維持
+embeddedLanguageFormatting: 'auto' # 組み込み言語のフォーマットを有効に
+singleAttributePerLine: false # 属性の改行しない
