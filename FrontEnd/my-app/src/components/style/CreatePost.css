@@ -1,0 +1,56 @@
+.createPostPage {
+    display: flex;
+    justify-content: center;
+}
+
+.postContainer {
+    background-color: white;
+    box-shadow: 0px 12px 15px -5px #777777;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 80%;
+    gap: 20px;
+    padding: 20px 40px;
+}
+
+.postContainer h1{
+    margin-left: 10px;
+    margin-bottom: 0px;
+}
+
+.inputPost{
+    outline: none;
+    padding: 10px 10px;
+    font-size: 25px;
+}
+
+.title{
+    font-size: large;
+    width: 60%;
+    height: 50px;
+}
+
+.article{
+    font-size: 25px;
+    width: 100%;
+    height: 400px;
+}
+
+.postContainer button{
+    width: 150px;
+    margin: 0px auto;
+    padding: 10px 0px;
+    background-color: rgb(147, 147, 255);
+    border: none;
+    box-shadow:  0px 10px 10px -5px #a8a8a8;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.postContainer button:hover{
+    background-color: rgb(171, 47, 248);
+    transform: translateY(2px);
+    box-shadow: none;
+}
