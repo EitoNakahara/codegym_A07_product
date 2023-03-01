@@ -1,16 +1,20 @@
-<!DOCTYPE html> 
+<html>
+
 <head>
-    <title>Login</title>
+    <meta charset="utf-8">
 </head>
+
 <body>
-    <h1>ログイン</h1>
-    <p>
-        <form method="POST" action="{{url_for('login')}}">
-            {{ form.csrf_token}}
-            {{ form.name.label}}:{{ form.name}}
-            {{ form.mail.label}}:{{ form.mail}}
-            {{ form.submit}}
-        </form>
-    </p>
+    <p>{% if error %}{{ error }}{% endif %}</p>
+    <form action="/login" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <div>
+            name <input type="text" name="name">
+        </div>
+        <div>
+            <input type="submit">
+        </div>
+    </form>
 </body>
+
 </html>

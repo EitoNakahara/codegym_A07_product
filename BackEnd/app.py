@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from flask import Flask, redirect, render_template, redirect
+from flask import Flask, redirect, render_template, request
 from flask_login import LoginManager, login_required, UserMixin, login_user, logout_user
 from flask_wtf import FlaskForm
+from flask_wtf.csrf import CSRFProtect
 from wtforms import StringField, SubmitField
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import *
+from sqlalchemy.sql.functions import current_timestamp
 from sqlalchemy.orm import *
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.schema import Column
@@ -13,10 +15,17 @@ from sqlalchemy.types import Integer, String
 import MySQLdb
 import sys
 
+
 USER='root'
 PASSWORD='tanisun1150'
 HOST = 'localhost'
 DATABASE = 'mysql://root:tanisun1150@localhost/test1'
+
+app = Flask(__name__)
+login_manager = LoginManager()
+login_manager.init_app(app)
+app.config['SECRET_KEY'] = "secret"
+csrf = CSRFProtect(app)
 
 metadata = MetaData()
 
@@ -27,75 +36,65 @@ db_session = scoped_session(sessionmaker(autocommit=False,
 Base = declarative_base()
 Base.query = db_session.query_property()
 
-class Book(Base):
-    __tablename__ = 'Book'
-    isbn = Column('isbn', Integer, primary_key=True)
-    title = Column('title', String(200))
-    price = Column('price', Integer)
-    publish = Column('publish', String(200))
-    published = Column('published', String(200))
+class User(Base):
+    __tablename__ = 'Users'
+    id = Column('id', Integer, primary_key=True)
+    name = Column('name', String(200))
+    age = Column('age', Integer)
+    description = Column('description', Text)
+    topics = Column('topics', TEXT)
+    created_at = Column('created_at', TIMESTAMP, server_default=current_timestamp())
+    updated_at = Column('updated_at', TIMESTAMP, nullable=False, server_default=text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'))
 
-    def __init__(self, isbn, title, price, publish, published):
-        self.isbn = isbn
-        self.title = title
-        self.price = price
-        self.publish = publish
-        self.published = published
-
-cur = db_session.query(Book).all()
-
-app = Flask(__name__)
-app.app_context().push()
-login_manager = LoginManager()
-login_manager.init_app(app)
-app.config['SECRET_KEY'] = "secret"
-
-db_uri = 'sqlite:///login.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
-db = SQLAlchemy(app)
-
-class User(UserMixin, db.Model):
-    __tablename__ = 'User'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Text())
-    mail = db.Column(db.Text())
-    def __init__(self,name, mail):
+    def __init__(self, id, name, age, description, topics, created_at, updated_at):
+        self.id = id
         self.name = name
-        self.mail = mail
+        self.age = age
+        self.description = description
+        self.topics = topics
+        self.created_at = created_at
+        self.updated_at = updated_at
 
-db.create_all()
+    def __repr__(self):
+        return 'User'
 
-class LoginForm(FlaskForm):
-    name = StringField('名前')
-    mail = StringField('メールアドレス')
-    submit = SubmitField('ログイン')
+class LoginUser(UserMixin, User):
+    def get_id(self):
+        return self.id
+
+def main(args):
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+#このファイルを直接実行したとき、mainメソッドでテーブルを作成する
+if __name__ == "__main__":
+    main(sys.argv)
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return LoginUser.query.filter(LoginUser.id == user_id).one_or_none()
 
 @app.route('/')
 def index():
     return render_template('top.html')
 
-@app.route('/member')
-@login_required
-def member():
-    return render_template('member.html')
+@app.route('/login', methods=['GET'])
+def form():
+    return render_template('login.html')
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['POST'])
 def login():
-    form = LoginForm()
+    name = request.form.get("name", "")
 
-    if form.validate_on_submit():
-        if form.name.data == 'ANDoblog' and form.mail.data == 'test@mail':
-            user = User(form.name.data)
-            login_user(user)
-            return redirect('/member')
+    try:
+        user = LoginUser.query.filter(LoginUser.name == name).one_or_none()
+        if user == None:
+            return render_template('login.html', error="指定のユーザーは存在しません")
         else:
-            return 'ログインに失敗しました'
-        
-    return render_template('login.html', form=form)
+            login_user(user, remember=True)
+    except Exception as e:
+        return render_template('member.html')
+    return render_template('member.html')
 
 @app.route('/logout')
 def logout():
@@ -103,6 +102,11 @@ def logout():
     logout_user()
 
     return render_template('logout.html')
+
+@app.route('/member')
+@login_required
+def member():
+    return render_template('member.html')
 
 if __name__ == '__main__':
     app.run(host="localhost", port=8888, debug=True)
