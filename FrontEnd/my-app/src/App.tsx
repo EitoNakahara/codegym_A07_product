@@ -1,53 +1,25 @@
-import React, { useState } from "react";
-import InputTodo from "./components/InputTodo";
-import InCompleteTodo from "./components/InCompleteTodo";
-import CompleteTodo from "./components/CompleteTodo";
-import "./style.css";
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
+import Home from './components/Home'
+import CreatePost from './components/CreatePost'
+import Login from './components/Login'
+import Logout from './components/Logout'
+import Navbar from './components/Navbar'
+import { useState } from 'react'
 
-const App = () => {
-  const [todoText, setTodoText] = useState('');
-  const [incompleteTodos, setIncompleteTodos] = useState(["aaa"]);
-  const [completeTodos, setCompleteTodos] = useState(["aaa"]);
-
-  const onChangeTodoText = (event: { target: { value: React.SetStateAction<string>; }; }) => setTodoText(event.target.value);
-
-  const addTask = () => {
-    if (todoText === '') return;
-    const newTodos = [...incompleteTodos, todoText];
-    setIncompleteTodos(newTodos);
-    setTodoText('');
-  };
-
-  const deleteTask = (index: number) => {
-    const newTodos = [...incompleteTodos];
-    newTodos.splice(index, 1);
-    setIncompleteTodos(newTodos);
-  }
-
-  const completeTask = (index: number) => {
-    const newInCompleteTodos = [...incompleteTodos];
-    newInCompleteTodos.splice(index, 1);
-
-    const newCompleteTodos = [...completeTodos, incompleteTodos[index]];
-    setIncompleteTodos(newInCompleteTodos);
-    setCompleteTodos(newCompleteTodos);
-  }
-
-  const undoTask = (index: number) => {
-    const newCompleteTodos = [...completeTodos];
-    newCompleteTodos.splice(index, 1);
-
-    const newInCompleteTodos = [...incompleteTodos, completeTodos[index]];
-    setIncompleteTodos(newInCompleteTodos);
-    setCompleteTodos(newCompleteTodos);
-  }
+function App() {
+  const [isAuth, setIsAuth] = useState<boolean>(false);
 
   return (
-    <>
-      <InputTodo todoText={todoText} onChange={onChangeTodoText} onClick={addTask} />
-      <InCompleteTodo incompleteTodos={incompleteTodos} completeCLick={completeTask} deleteClick={deleteTask}/>
-      <CompleteTodo completeTodos={completeTodos} undoCLick={undoTask}/>
-    </>
-  );
-};
-export default App;
+    <Router>
+      <Navbar isAuth={isAuth} />
+      <Routes>
+        <Route path='/' element={<Home />}></Route>
+        <Route path='/create_post' element={<CreatePost />}></Route>
+        <Route path='/login' element={<Login setIsAuth={setIsAuth} />}></Route>
+        <Route path='/logout' element={<Logout setIsAuth={setIsAuth} />}></Route>
+      </Routes>
+    </Router>
+  )
+}
+
+export default App
