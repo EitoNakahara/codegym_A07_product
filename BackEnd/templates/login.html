@@ -9,7 +9,8 @@
     <form action="/login" method="post">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <div>
-            name <input type="text" name="name">
+            mail <input type="text" name="mail">
+            password <input type="text" name="password">
         </div>
         <div>
             <input type="submit">

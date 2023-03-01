@@ -2,17 +2,13 @@
 
 from flask import Flask, redirect, render_template, request
 from flask_login import LoginManager, login_required, UserMixin, login_user, logout_user
-from flask_wtf import FlaskForm
 from flask_wtf.csrf import CSRFProtect
-from wtforms import StringField, SubmitField
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import *
 from sqlalchemy.sql.functions import current_timestamp
 from sqlalchemy.orm import *
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.schema import Column
 from sqlalchemy.types import Integer, String
-import MySQLdb
 import sys
 
 
@@ -30,30 +26,23 @@ csrf = CSRFProtect(app)
 metadata = MetaData()
 
 engine = create_engine(DATABASE)
-db_session = scoped_session(sessionmaker(autocommit=False,
+session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=engine))
 Base = declarative_base()
-Base.query = db_session.query_property()
+Base.query = session.query_property()
 
 class User(Base):
     __tablename__ = 'Users'
     id = Column('id', Integer, primary_key=True)
-    name = Column('name', String(200))
-    age = Column('age', Integer)
-    description = Column('description', Text)
-    topics = Column('topics', TEXT)
-    created_at = Column('created_at', TIMESTAMP, server_default=current_timestamp())
-    updated_at = Column('updated_at', TIMESTAMP, nullable=False, server_default=text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'))
-
-    def __init__(self, id, name, age, description, topics, created_at, updated_at):
+    name = Column('name', String(200), nullable=true)
+    mail = Column('mail', String(200), nullable = false)
+    password = Column('password', String(200), nullable=false)
+    def __init__(self, id, name, mail, password):
         self.id = id
         self.name = name
-        self.age = age
-        self.description = description
-        self.topics = topics
-        self.created_at = created_at
-        self.updated_at = updated_at
+        self.mail = mail
+        self.password = password
 
     def __repr__(self):
         return 'User'
@@ -84,14 +73,21 @@ def form():
 
 @app.route('/login', methods=['POST'])
 def login():
-    name = request.form.get("name", "")
 
     try:
-        user = LoginUser.query.filter(LoginUser.name == name).one_or_none()
-        if user == None:
-            return render_template('login.html', error="指定のユーザーは存在しません")
+        input_mail = request.form.get("mail", "")
+        mail = session.query(User).filter(User.mail == input_mail).one_or_none()
+
+        input_password = request.form.get("password", "")
+        password = session.query(User).filter(User.password == input_password).one_or_none()
+
+        if mail == None:
+            return render_template('login.html', error="指定のメアドは存在しません")
+
+        elif password == None:
+            return render_template('login.html', error="パスワードが間違っています")
         else:
-            login_user(user, remember=True)
+            login_user(mail, remember=True)
     except Exception as e:
         return render_template('member.html')
     return render_template('member.html')
