@@ -1,0 +1,8 @@
+flask
+sqlAlchemy
+flask_sqlalchemy
+flask_login
+flask_wtf
+wtforms
+mysql-connector-python
+mysqlclient
