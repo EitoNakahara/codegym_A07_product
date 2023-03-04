@@ -59,7 +59,25 @@ class User(Base):
     def __repr__(self):
         return 'User'
 
-# テーブル：タスク一覧の定義 
+class LoginUser(UserMixin, User):
+    def get_id(self):
+        return self.id
+
+def main(args):
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+#このファイルを直接実行したとき、mainメソッドでテーブルを作成する
+if __name__ == "__main__":
+    main(sys.argv)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return LoginUser.query.filter(LoginUser.id == user_id).one_or_none()
+
+# ---------------------------------------------------------------------------------------------------------
+# 以下追加変更箇所
+# テーブル：タスク一覧の定義 テーブル作成のSQL文はアプリの構成3ページに記載
 class Task(Base):
     __tablename__ = 'task'
     id = Column('id', Integer, primary_key=True, autoincrement=True)
@@ -77,81 +95,71 @@ class Task(Base):
 
 # テーブル：タワーの定義
 class Tower(Base):
-    __tablename__ = 'tower'
+    __tablename__ = 'Done_task'
     task_no = Column('task_no', Integer, primary_key=True, autoincrement=True)
     task_id = Column('task_id', Integer)
+    user_id = Column('user_id', Integer)
     created_at = Column('created_at', TIMESTAMP, server_default=current_timestamp())
     
-    def __init__(self, task_no=None, task_id=None, created_at=None):
+    def __init__(self, task_no=None, task_id=None, user_id=None, created_at=None):
         self.task_no = task_no
         self.task_id = task_id
+        self.user_id = user_id
         self.created_at = created_at
 
+# 仮のユーザーを指定
+user_id=1
 
-class LoginUser(UserMixin, User):
-    def get_id(self):
-        return self.id
-
-def main(args):
-    Base.metadata.drop_all(bind=engine)
-    Base.metadata.create_all(bind=engine)
-
-#このファイルを直接実行したとき、mainメソッドでテーブルを作成する
-if __name__ == "__main__":
-    main(sys.argv)
-
-@login_manager.user_loader
-def load_user(user_id):
-    return LoginUser.query.filter(LoginUser.id == user_id).one_or_none()
-
-# user_idを適用する必要あり
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'GET':
-        tasks = db_session.query(Task).filter(Task.display_flag==True, Task.valid_flag==True).all()
-        towers = db_session.query(Tower).all()
+        #表示フラッグがTrueかつ有効フラッグがTrueのタスクすべてを取得
+        tasks = db_session.query(Task).filter(Task.display_flag==True, Task.valid_flag==True, Task.user_id==user_id).all()
+        #タワーに載せるこれまでにやったタスクをすべて取得
+        towers = db_session.query(Tower).all() 
         return render_template('top.html', tasks=tasks, towers=towers)
 
     else:
+        #新しいタスクを作成
         content = request.form.get('content')
-        new_task = Task(content=content, user_id=1) #ここも
+        new_task = Task(content=content, user_id=user_id)
         db_session.add(new_task)
         db_session.commit()
         return redirect('/')
-    
-@app.route('/create')
-def create():
-    return render_template('create.html')
 
+#表示フラッグをFalseにしてタスクを完了状態にする。また、タワーのテーブルに追加する
 @app.route('/complete/<int:id>')
 def complete_task(id):
-    complete_task = db_session.query(Task).filter(Task.id==id).all()[0]
+    complete_task = db_session.query(Task).filter(Task.id==id, Task.user_id==user_id).all()[0]
     complete_task.display_flag = False
-    add_tower = Tower(task_id=id)
+    add_tower = Tower(task_id=id, user_id=user_id)
     db_session.add(complete_task)
     db_session.add(add_tower)
     db_session.commit()
     return redirect('/')
 
+#表示フラッグと有効フラッグをfalseにしてタスクを削除する
 @app.route('/delete/<int:id>')
 def delete_task(id):
-    delete_task = db_session.query(Task).filter(Task.id==id).all()[0]
+    delete_task = db_session.query(Task).filter(Task.id==id, Task.user_id==user_id).all()[0]
     delete_task.valid_flag = False
     delete_task.display_flag = False
     db_session.add(delete_task)
     db_session.commit()
     return redirect('/')
 
+#表示フラッグがFalseかつ有効フラッグがTrueのタスクを未完了状態にする
 @app.route('/reset')
 def reset_display_flag():
-    reset_tasks = db_session.query(Task).filter(Task.display_flag==False, Task.valid_flag==True).all()
+    reset_tasks = db_session.query(Task).filter(Task.display_flag==False, Task.valid_flag==True, Task.user_id==user_id).all()
     for reset_task in reset_tasks:
         reset_task.display_flag = True
         db_session.add(reset_task)
     db_session.commit()
     return redirect('/')
 
-
+#ここまで
+#----------------------------------------------------------------------------------------------------------------
 @app.route('/login', methods=['GET'])
 def form():
     return render_template('login.html')

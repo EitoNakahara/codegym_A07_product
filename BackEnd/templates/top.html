@@ -9,5 +9,28 @@
             <li><a href='/login'>ログインはこちら</a></li>
             <li><a href='/logout'>ログアウトはこちら</a></li>        
         </ui>
+
+        <div class="form">
+            <form action="/" method="POST">
+                <label for="content">content</label>
+                <input type="text" name="content">
+                <input type="submit" value="Create">
+            </form>
+        </div>
+
+        <a href="/reset" role="button">reset_display_flag</a>
+
+
+        <h1>task</h1>
+        {% for task in tasks %}
+            <h2>タイトル : {{ task.content }}</h2>
+            <a href="/complete/{{ task.id }}" role="button">complete</a>
+            <a href="/delete/{{ task.id }}" role="button">Delete</a>
+        {% endfor %}
+
+        <h1>tower</h1>
+        {% for tower in towers %}
+            <h2>No:{{ tower.task_no }}, Id:{{ tower.task_id }}</h2>
+        {% endfor %}
     </body>
 </html>
