@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flask import Flask, redirect, render_template, request
+from flask import Flask, redirect, render_template, request, make_response, jsonify, Blueprint
 from flask_login import LoginManager, login_required, UserMixin, login_user, logout_user
 from flask_wtf.csrf import CSRFProtect
 from sqlalchemy import *
@@ -10,7 +10,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.schema import Column
 from sqlalchemy.types import Integer, String
 import sys
-
 
 USER='root'
 PASSWORD='tanisun1150'
@@ -34,13 +33,11 @@ Base.query = session.query_property()
 
 class User(Base):
     __tablename__ = 'Users'
-    id = Column('id', Integer, primary_key=True)
+    id = Column('id', Integer, autoincrement=True, primary_key=True)
     name = Column('name', String(200), nullable=true)
     mail = Column('mail', String(200), nullable = false)
     password = Column('password', String(200), nullable=false)
-    def __init__(self, id, name, mail, password):
-        self.id = id
-        self.name = name
+    def __init__(self, mail, password):
         self.mail = mail
         self.password = password
 
@@ -52,7 +49,6 @@ class LoginUser(UserMixin, User):
         return self.id
 
 def main(args):
-    Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
 
 #このファイルを直接実行したとき、mainメソッドでテーブルを作成する
@@ -67,13 +63,36 @@ def load_user(user_id):
 def index():
     return render_template('top.html')
 
+
+@app.route('/signup', methods=['GET'])
+def signupForm():
+    return render_template('signup.html')
+
+@app.route('/signup', methods=['POST'])
+def signup():
+
+    input_mail = request.form.get("mail", "")
+
+    input_password = request.form.get("password", "")
+
+    if input_mail == None:
+        return render_template('signup.html', error='please enter your mail')
+
+    elif input_password == None:
+        return render_template('signup.html', error='please enter your password')
+    
+    user = User(input_mail, input_password) 
+    session.add(user)
+    session.commit()
+
+    return render_template('login.html', error='signup succeeded!')
+
 @app.route('/login', methods=['GET'])
-def form():
+def loginForm():
     return render_template('login.html')
 
 @app.route('/login', methods=['POST'])
 def login():
-
     try:
         input_mail = request.form.get("mail", "")
         mail = session.query(User).filter(User.mail == input_mail).one_or_none()
@@ -82,10 +101,10 @@ def login():
         password = session.query(User).filter(User.password == input_password).one_or_none()
 
         if mail == None:
-            return render_template('login.html', error="指定のメアドは存在しません")
+            return render_template('login.html', error='The mail does not exist')
 
         elif password == None:
-            return render_template('login.html', error="パスワードが間違っています")
+            return render_template('login.html', error='Password incorrect')
         else:
             login_user(mail, remember=True)
     except Exception as e:
@@ -105,4 +124,4 @@ def member():
     return render_template('member.html')
 
 if __name__ == '__main__':
-    app.run(host="localhost", port=8888, debug=True)
+    app.run()
