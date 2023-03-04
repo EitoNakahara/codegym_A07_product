@@ -11,21 +11,22 @@ from sqlalchemy.sql.functions import current_timestamp
 from sqlalchemy.orm import *
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.schema import Column
-from sqlalchemy.types import Integer, String
+from sqlalchemy.types import Integer, String, Boolean
 import MySQLdb
 import sys
 
 
+
 USER='root'
-PASSWORD='tanisun1150'
+PASSWORD='eito8110'#tanisun1150
 HOST = 'localhost'
-DATABASE = 'mysql://root:tanisun1150@localhost/test1'
+DATABASE = 'mysql://root:eito8110@localhost/tower'
 
 app = Flask(__name__)
 login_manager = LoginManager()
 login_manager.init_app(app)
-app.config['SECRET_KEY'] = "secret"
-csrf = CSRFProtect(app)
+# app.config['SECRET_KEY'] = "secret"
+# csrf = CSRFProtect(app)
 
 metadata = MetaData()
 
@@ -58,6 +59,35 @@ class User(Base):
     def __repr__(self):
         return 'User'
 
+# テーブル：タスク一覧の定義 
+class Task(Base):
+    __tablename__ = 'task'
+    id = Column('id', Integer, primary_key=True, autoincrement=True)
+    user_id = Column('user_id', Integer)
+    content = Column('content', String(100))
+    display_flag = Column('display_flag', Boolean)
+    valid_flag = Column('valid_flag', Boolean)
+    
+    def __init__(self, id=None, user_id=None, content=None, display_flag=True, valid_flag=True):
+        self.id = id
+        self.user_id = user_id
+        self.content = content
+        self.display_flag = display_flag
+        self.valid_flag = valid_flag
+
+# テーブル：タワーの定義
+class Tower(Base):
+    __tablename__ = 'tower'
+    task_no = Column('task_no', Integer, primary_key=True, autoincrement=True)
+    task_id = Column('task_id', Integer)
+    created_at = Column('created_at', TIMESTAMP, server_default=current_timestamp())
+    
+    def __init__(self, task_no=None, task_id=None, created_at=None):
+        self.task_no = task_no
+        self.task_id = task_id
+        self.created_at = created_at
+
+
 class LoginUser(UserMixin, User):
     def get_id(self):
         return self.id
@@ -74,9 +104,53 @@ if __name__ == "__main__":
 def load_user(user_id):
     return LoginUser.query.filter(LoginUser.id == user_id).one_or_none()
 
-@app.route('/')
+# user_idを適用する必要あり
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    return render_template('top.html')
+    if request.method == 'GET':
+        tasks = db_session.query(Task).filter(Task.display_flag==True, Task.valid_flag==True).all()
+        towers = db_session.query(Tower).all()
+        return render_template('top.html', tasks=tasks, towers=towers)
+
+    else:
+        content = request.form.get('content')
+        new_task = Task(content=content, user_id=1) #ここも
+        db_session.add(new_task)
+        db_session.commit()
+        return redirect('/')
+    
+@app.route('/create')
+def create():
+    return render_template('create.html')
+
+@app.route('/complete/<int:id>')
+def complete_task(id):
+    complete_task = db_session.query(Task).filter(Task.id==id).all()[0]
+    complete_task.display_flag = False
+    add_tower = Tower(task_id=id)
+    db_session.add(complete_task)
+    db_session.add(add_tower)
+    db_session.commit()
+    return redirect('/')
+
+@app.route('/delete/<int:id>')
+def delete_task(id):
+    delete_task = db_session.query(Task).filter(Task.id==id).all()[0]
+    delete_task.valid_flag = False
+    delete_task.display_flag = False
+    db_session.add(delete_task)
+    db_session.commit()
+    return redirect('/')
+
+@app.route('/reset')
+def reset_display_flag():
+    reset_tasks = db_session.query(Task).filter(Task.display_flag==False, Task.valid_flag==True).all()
+    for reset_task in reset_tasks:
+        reset_task.display_flag = True
+        db_session.add(reset_task)
+    db_session.commit()
+    return redirect('/')
+
 
 @app.route('/login', methods=['GET'])
 def form():
