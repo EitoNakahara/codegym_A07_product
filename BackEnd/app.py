@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from flask import Flask, redirect, render_template, request, make_response, jsonify, Blueprint
+from flask import Flask, render_template, request
 from flask_login import LoginManager, login_required, UserMixin, login_user, logout_user
 from flask_wtf.csrf import CSRFProtect
 from sqlalchemy import *
-from sqlalchemy.sql.functions import current_timestamp
 from sqlalchemy.orm import *
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.schema import Column
 from sqlalchemy.types import Integer, String
+from flask_cors import CORS, cross_origin
 import sys
 
 USER='root'
@@ -16,11 +16,13 @@ PASSWORD='tanisun1150'
 HOST = 'localhost'
 DATABASE = 'mysql://root:tanisun1150@localhost/test1'
 
+
 app = Flask(__name__)
 login_manager = LoginManager()
 login_manager.init_app(app)
 app.config['SECRET_KEY'] = "secret"
 csrf = CSRFProtect(app)
+CORS(app)
 
 metadata = MetaData()
 
@@ -59,69 +61,37 @@ if __name__ == "__main__":
 def load_user(user_id):
     return LoginUser.query.filter(LoginUser.id == user_id).one_or_none()
 
-@app.route('/')
-def index():
-    return render_template('top.html')
-
-
-@app.route('/signup', methods=['GET'])
-def signupForm():
-    return render_template('signup.html')
-
-@app.route('/signup', methods=['POST'])
+@app.route('/signup', methods=["GET","POST"])
+@cross_origin(origins=["http://localhost:5173"], methods=["GET", "POST"])
 def signup():
 
-    input_mail = request.form.get("mail", "")
+    input_mail = request.json.get("mail")
 
-    input_password = request.form.get("password", "")
+    input_password = request.json.get("pass")
 
-    if input_mail == None:
-        return render_template('signup.html', error='please enter your mail')
-
-    elif input_password == None:
-        return render_template('signup.html', error='please enter your password')
+    if input_mail == None or input_password:
+        return {"isAuth": "false"}
     
     user = User(input_mail, input_password) 
     session.add(user)
     session.commit()
 
-    return render_template('login.html', error='signup succeeded!')
+    return {"isAuth": "true"}
 
-@app.route('/login', methods=['GET'])
-def loginForm():
-    return render_template('login.html')
-
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=["GET", "POST"])
+@cross_origin(origins=["http://localhost:5173"], methods=["GET", "POST"])
 def login():
-    try:
-        input_mail = request.form.get("mail", "")
-        mail = session.query(User).filter(User.mail == input_mail).one_or_none()
 
-        input_password = request.form.get("password", "")
-        password = session.query(User).filter(User.password == input_password).one_or_none()
+    input_mail = request.json.get("mail")
+    mail = session.query(User).filter(User.mail == input_mail).one_or_none()
 
-        if mail == None:
-            return render_template('login.html', error='The mail does not exist')
+    input_password = request.json.get("pass")
+    password = session.query(User).filter(User.password == input_password).one_or_none()
 
-        elif password == None:
-            return render_template('login.html', error='Password incorrect')
-        else:
-            login_user(mail, remember=True)
-    except Exception as e:
-        return render_template('member.html')
-    return render_template('member.html')
+    if mail == None or password == None:
+        return {"isAuth": "false"}
 
-@app.route('/logout')
-def logout():
-
-    logout_user()
-
-    return render_template('logout.html')
-
-@app.route('/member')
-@login_required
-def member():
-    return render_template('member.html')
+    return {"isAuth": "true"}
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='localhost', port=8080)
