@@ -1,9 +1,17 @@
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth, provider } from "../firebase";
-import { useNavigate } from "react-router-dom";
+import { auth, provider } from "../../firebase";
+import { useNavigate, Link, useFormAction } from "react-router-dom";
+import { useState } from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
+
+import "../style/Login.css";
 
 const Login = ({ setIsAuth }: { setIsAuth: any }) => {
     const navigate = useNavigate();
+
+    const loginUser = () => {
+        console.log('login');
+    }
 
     const loginGoogle = () => {
         signInWithPopup(auth, provider)
@@ -28,8 +36,17 @@ const Login = ({ setIsAuth }: { setIsAuth: any }) => {
 
     return (
         <div>
-            <p>ログインして始める</p>
-            <button onClick={loginGoogle}>Googleでログイン</button>
+            <p>ログイン</p>
+            <div className="mail-login">
+                <input placeholder="メールアドレス" />
+                <input placeholder="パスワード" />
+                <button className="login-button" onClick={loginUser}>ログイン</button>
+                <p>アカウントをお持ちでない場合は<Link to={'/signup'}>こちら</Link>から</p>
+            </div>
+            <p>その他のログイン</p>
+            <div className="google-login">
+                <button onClick={loginGoogle}>SIGN IN WITH GOOGLE</button>
+            </div>
         </div>
     )
 }

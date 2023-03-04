@@ -1,7 +1,7 @@
 import { useEffect } from "react";
-import { db } from "../firebase";
+import { db } from "../../firebase";
 import { collection, getDocs } from "firebase/firestore";
-import "./style/Home.css"
+import "../style/Home.css"
 
 const Home = () => {
   useEffect(() => {
