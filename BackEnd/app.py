@@ -69,7 +69,7 @@ def signup():
 
     input_password = request.json.get("pass")
 
-    if input_mail == None or input_password:
+    if input_mail == None or input_password == None:
         return {"isAuth": "false"}
     
     user = User(input_mail, input_password) 
@@ -83,12 +83,10 @@ def signup():
 def login():
 
     input_mail = request.json.get("mail")
-    mail = session.query(User).filter(User.mail == input_mail).one_or_none()
-
     input_password = request.json.get("pass")
-    password = session.query(User).filter(User.password == input_password).one_or_none()
+    result = session.query().filter(User.mail == input_mail, User.password == input_password).one_or_none
 
-    if mail == None or password == None:
+    if result == None:
         return {"isAuth": "false"}
 
     return {"isAuth": "true"}
