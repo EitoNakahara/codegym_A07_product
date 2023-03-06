@@ -6,7 +6,7 @@
 
 <body>
     <p>{% if error %}{{ error }}{% endif %}</p>
-    <form action="/login" method="post">
+    <form action="/signup" method="post">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <div>
             mail <input type="text" name="mail">
@@ -16,7 +16,6 @@
             <input type="submit">
         </div>
     </form>
-    <a href='/signup'>サインアップはこちら</a></li>
 </body>
 
 </html>

@@ -3,6 +3,8 @@ sqlAlchemy
 flask_sqlalchemy
 flask_login
 flask_wtf
+flask_cors
 wtforms
 mysql-connector-python
 mysqlclient
+views
