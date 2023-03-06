@@ -1,62 +1,73 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react'
+import { useNavigate } from "react-router-dom";
 
 const SignUp = ({ setIsAuth }: { setIsAuth: any }) => {
+    const navigate = useNavigate();
 
-    /*const navigate = useNavigate();*/
+    const [email, setEmail] = useState('');
+    const [pass, setPass] = useState('');
+    const [checkEmail, setCheckEmail] = useState(false);
+    const [checkPass, setCheckPass] = useState(false);
+    const [checkRePass, setCheckRePass] = useState(false);
+    const [inputError, setInputError] = useState(false);
 
-    /*const loginUser = () => {
-        console.log('login');*/
+    const URL = 'http://127.0.0.1:5000';
 
-    const [mail, setMail] = useState("");
-    const [pass, setPass] = useState("");
-    const [error, setError] = useState(false);
-
-    useEffect(() => {
-        console.log("change");
-    })
-
-    const URL = "http://localhost:8080";
-
-    const inputText = (event: any) => {
-        console.log(event.target.value);
-        setMail(event.target.value);
+    const inputEmail = (event: any) => {
+        if (email != null) {
+            setEmail(event.target.value);
+            setCheckEmail(true);
+        }
+        else { setCheckEmail(false); }
     }
 
     const inputPass = (event: any) => {
-        setPass(event.target.value);
-    }
-
-    const validatePass = (event: any) => {
-        if (event.target.value != pass) {
-            return setError(true)
+        if (pass != null) {
+            setPass(event.target.value);
+            setCheckPass(true);
         }
-        return setError(false)
+        else { setCheckPass(false); }
     }
 
-    const onClickHandler = async () => {
-        const response = await fetch(URL, {
-            mode: "cors",
-            method: "post",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ mail: mail, pass: pass }) // フロントエンドから送信するデータ
-        })
-        const json = await response.json() // バックエンドから受信したデータ
+    const inputRePass = (event: any) => {
+        if (event.target.value != pass) {
+            return setCheckRePass(true);
+        }
+        return setCheckRePass(false);
+    }
 
-        setIsAuth[json["isAuth"]]
-        console.log(json["isAuth"])
+    const pushRegister = async () => {
+        if (inputError) {
+            return
+        }
+        const response = await fetch(URL, {
+            mode: 'cors',
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ mail: email, pass: pass }), // フロントエンドから送信するデータ
+        })
+        const json = await response.json(); // バックエンドから受信したデータ
+        setIsAuth[json['isRegister']];
+        console.log(json['isRegister']);
+
     }
 
     return (
-        <>
-            <input onChange={inputText} placeholder="name" />
-            <input onChange={inputPass} placeholder="password" />
-            <input onChange={validatePass} placeholder="rePassword" />
-            {error ? "パスワードが異なっています" : ""}
-            <button onClick={onClickHandler}>click</button>
-        </>
-    )
-};
-
+        <div>
+            <p>新規登録</p>
+            <div className="mail-login">
+                <input onChange={inputEmail} placeholder="メールアドレス" />
+                {checkEmail ? <p>メールアドレスが不十分です</p> : ""}
+                <input onChange={inputPass} placeholder="パスワード" />
+                {checkPass ? <p>パスワードが不十分です</p> : ""}
+                <input onChange={inputRePass} placeholder="パスワードの確認" />
+                {checkRePass ? <p>パスワードが異なっています</p> : ""}
+                <button className="login-button" onClick={pushRegister}>新規登録</button>
+                {inputError ? <p>全て入力してください</p> : ""}
+            </div>
+        </div>
+    );
+}
 export default SignUp

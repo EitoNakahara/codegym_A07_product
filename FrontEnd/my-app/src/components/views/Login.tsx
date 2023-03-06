@@ -1,72 +1,56 @@
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../../firebase";
-import { useNavigate, Link, useFormAction } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 
 import "../style/Login.css";
 
 const Login = ({ setIsAuth }: { setIsAuth: any }) => {
-    /*const navigate = useNavigate();*/
+    const navigate = useNavigate();
 
-    /*const loginUser = () => {
-        console.log('login');*/
+    const [email, setEmail] = useState('');
+    const [pass, setPass] = useState('');
+    const [checkEmail, setCheckEmail] = useState(false);
+    const [checkPass, setCheckPass] = useState(false);
+    const [inputError, setInputError] = useState(false);
 
-        const [mail, setMail] = useState("");
-        const [pass, setPass] = useState("");
-        const [error, setError] = useState(false);
+    const URL = 'http://127.0.0.1:5000';
 
-        useEffect(() => {
-            console.log("change");
-        })
-
-        const URL = "http://localhost:8080/login";
-    
-
-
-        const inputText = (event: any) => {
-            console.log(event.target.value);
-            setMail(event.target.value);
+    const inputEmail = (event: any) => {
+        if (email != null) {
+            setEmail(event.target.value);
+            setCheckEmail(true);
         }
-
-        const inputPass = (event: any) => {
-            setPass(event.target.value);
-        }
-
-        const validatePass = (event: any) => {
-            if (event.target.value != pass) {
-                return setError(true)
-            }
-            return setError(false)
-        }
-
-        const onClickHandler = async () => {
-            const response = await fetch(URL, {
-                mode: "cors",
-                method: "post",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ mail: mail, pass: pass }) // フロントエンドから送信するデータ
-            })
-            const json = await response.json() // バックエンドから受信したデータ
-
-            setIsAuth[json["isAuth"]]
-            console.log(json["isAuth"])
-        }
-
-        return (
-            <>
-                <input onChange={inputText} placeholder="name" />
-                <input onChange={inputPass} placeholder="password" />
-                <input onChange={validatePass} placeholder="rePassword" />
-                {error ? "パスワードが異なっています" : ""}
-                <button onClick={onClickHandler}>click</button>
-            </>
-        )
+        else { setCheckEmail(false); }
     }
 
-    /*
+    const inputPass = (event: any) => {
+        if (pass != null) {
+            setPass(event.target.value);
+            setCheckPass(true);
+        }
+        else { setCheckPass(false); }
+    }
+
+    const pushLogin = async () => {
+        if (inputError) {
+            return
+        }
+        const response = await fetch(URL, {
+            mode: "cors",
+            method: "post",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ mail: email, pass: pass }) // フロントエンドから送信するデータ
+        });
+        const json = await response.json(); // バックエンドから受信したデータ
+
+        setIsAuth[json["isAuth"]];
+        console.log(json["isAuth"]);
+    }
+
     const loginGoogle = () => {
         signInWithPopup(auth, provider)
             .then((result) => {
@@ -92,9 +76,12 @@ const Login = ({ setIsAuth }: { setIsAuth: any }) => {
         <div>
             <p>ログイン</p>
             <div className="mail-login">
-                <input placeholder="メールアドレス" />
-                <input placeholder="パスワード" />
-                <button className="login-button" onClick={loginUser}>ログイン</button>
+                <input onChange={inputEmail} placeholder="メールアドレス" />
+                {checkEmail ? <p>メールアドレスが不十分です</p> : ""}
+                <input onChange={inputPass} placeholder="パスワード" />
+                {checkPass ? <p>パスワードが不十分です</p> : ""}
+                <button className="login-button" onClick={pushLogin}>ログイン</button>
+                {inputError ? <p>全て入力してください</p> : ""}
                 <p>アカウントをお持ちでない場合は<Link to={'/signup'}>こちら</Link>から</p>
             </div>
             <p>その他のログイン</p>
@@ -103,6 +90,5 @@ const Login = ({ setIsAuth }: { setIsAuth: any }) => {
             </div>
         </div>
     )
-    */
-
+}
 export default Login

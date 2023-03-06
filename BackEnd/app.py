@@ -70,13 +70,13 @@ def signup():
     input_password = request.json.get("pass")
 
     if input_mail == None or input_password == None:
-        return {"isAuth": "false"}
+        return {"isRegister": "false"}
     
     user = User(input_mail, input_password) 
     session.add(user)
     session.commit()
 
-    return {"isAuth": "true"}
+    return {"isRegister": "true"}
 
 @app.route('/login', methods=["GET", "POST"])
 @cross_origin(origins=["http://localhost:5173"], methods=["GET", "POST"])

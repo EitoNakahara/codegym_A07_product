@@ -6,10 +6,6 @@ import { faHouse, faFilePen, faRightToBracket, faRightFromBracket } from "@forta
 const Navbar = ({ isAuth }: { isAuth: any }) => {
     return (
         <nav>
-            <Link to="/helloworld">
-                <FontAwesomeIcon icon={faHouse} />
-                helloworld
-            </Link>
             <Link to="/">
                 <FontAwesomeIcon icon={faHouse} />
                 ホーム
