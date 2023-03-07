@@ -9,10 +9,6 @@ import "../style/Login.css";
 const Login = ({ setIsAuth }: { setIsAuth: any }) => {
     const navigate = useNavigate();
 
-<<<<<<< HEAD
-    const loginUser = () => {
-        console.log('login');
-=======
     const [email, setEmail] = useState('');
     const [pass, setPass] = useState('');
     const [checkEmail, setCheckEmail] = useState(false);
@@ -53,7 +49,6 @@ const Login = ({ setIsAuth }: { setIsAuth: any }) => {
 
         setIsAuth[json["isAuth"]];
         console.log(json["isAuth"]);
->>>>>>> feature/yuji
     }
 
     const loginGoogle = () => {
@@ -81,29 +76,19 @@ const Login = ({ setIsAuth }: { setIsAuth: any }) => {
         <div>
             <p>ログイン</p>
             <div className="mail-login">
-<<<<<<< HEAD
-                <input placeholder="メールアドレス" />
-                <input placeholder="パスワード" />
-                <button className="login-button" onClick={loginUser}>ログイン</button>
-=======
                 <input onChange={inputEmail} placeholder="メールアドレス" />
                 {checkEmail ? <p>メールアドレスが不十分です</p> : ""}
                 <input onChange={inputPass} placeholder="パスワード" />
                 {checkPass ? <p>パスワードが不十分です</p> : ""}
                 <button className="login-button" onClick={pushLogin}>ログイン</button>
                 {inputError ? <p>全て入力してください</p> : ""}
->>>>>>> feature/yuji
                 <p>アカウントをお持ちでない場合は<Link to={'/signup'}>こちら</Link>から</p>
-            </div>
+            </div >
             <p>その他のログイン</p>
             <div className="google-login">
                 <button onClick={loginGoogle}>SIGN IN WITH GOOGLE</button>
             </div>
-        </div>
+        </div >
     )
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> feature/yuji
 export default Login
