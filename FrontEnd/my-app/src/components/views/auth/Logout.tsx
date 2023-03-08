@@ -1,4 +1,4 @@
-import { auth, provider } from "../../firebase";
+import { auth, provider } from "../../../firebase";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 

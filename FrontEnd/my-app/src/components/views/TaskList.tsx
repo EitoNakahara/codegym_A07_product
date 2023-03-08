@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import InputTodo from "../utils/Todo/InputTodo";
 import InCompleteTodo from "../utils/Todo/InCompleteTodo";
-import "../style/TaskList.css";
+import "../style/task/TaskList.css";
 
 const TaskList = () => {
     const [todoText, setTodoText] = useState('');

@@ -1,5 +1,5 @@
 import React from "react";
-import Task from "./task";
+import Task from "./Task";
 
 const InCompleteTodo = (props: { incompleteTodos: any; completeCLick: any; deleteClick: any; }) => {
     const { incompleteTodos, completeCLick, deleteClick } = props;

@@ -1,3 +1,4 @@
+import "../../style/task/Task.css"
 
 const Task = (props: { todo: any, index: any, completeCLick: any; deleteClick: any; }) => {
     const { todo, index, completeCLick, deleteClick } = props;

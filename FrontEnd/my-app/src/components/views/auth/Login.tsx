@@ -1,10 +1,10 @@
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth, provider } from "../../firebase";
+import { auth, provider } from "../../../firebase";
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 
 
-import "../style/Login.css";
+import "../../style/auth/Login.css";
 
 const Login = ({ setIsAuth }: { setIsAuth: any }) => {
     const navigate = useNavigate();
