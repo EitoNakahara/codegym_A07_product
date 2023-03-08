@@ -3,10 +3,10 @@ import InputTodo from "../utils/Todo/InputTodo";
 import InCompleteTodo from "../utils/Todo/InCompleteTodo";
 import "../style/task/TaskList.css";
 
-const TaskList = () => {
+const TaskList = ({ setCompleteTodos }: { setCompleteTodos: any }) => {
     const [todoText, setTodoText] = useState('');
-    const [incompleteTodos, setIncompleteTodos] = useState(["aaa"]);
-    const [completeTodos, setCompleteTodos] = useState(["aaa"]);
+    const [incompleteTodos, setIncompleteTodos] = useState(["見本"]);
+    const [towerTodos, setTowerTodos] = useState(["見本"]);
 
     const onChangeTodoText = (event: any) => setTodoText(event.target.value);
 
@@ -27,13 +27,14 @@ const TaskList = () => {
         const newInCompleteTodos = [...incompleteTodos];
         newInCompleteTodos.splice(index, 1);
 
-        const newCompleteTodos = [...completeTodos, incompleteTodos[index]];
+        const newCompleteTodos = [...towerTodos, incompleteTodos[index]];
         setIncompleteTodos(newInCompleteTodos);
         setCompleteTodos(newCompleteTodos);
     }
 
     return (
         <>
+            <p className="title">今日やること一覧</p>
             <InCompleteTodo incompleteTodos={incompleteTodos} completeCLick={completeTask} deleteClick={deleteTask} />
             <InputTodo todoText={todoText} onChange={onChangeTodoText} onClick={addTask} />
         </>

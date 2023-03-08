@@ -11,3 +11,24 @@ button:hover{
     border: none;
     cursor: pointer;
 }
+
+.list_row{
+    list-style: none;
+    display: flex;
+    flex-direction:column;
+}
+
+.list_row li{
+    font-size: 50px;
+    text-align: center;
+}
+
+.button_list{
+    display: flex;
+    flex-direction:row;
+    margin: 20px auto;
+}
+
+.button_list button{
+    padding: 10px 40px;
+}

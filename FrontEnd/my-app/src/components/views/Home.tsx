@@ -1,10 +1,11 @@
 import "../style/Home.css";
+import CompleteTodo from "../utils/Todo/CompleteTodo";
 
-const Home = () => {
-
+const Home = ({ completeTodos }: { completeTodos: any }) => {
   return (
     <>
-      <div>Home</div>
+      <p className="title">今日やること一覧</p>
+      <CompleteTodo completeTodos={completeTodos} />
     </>
   );
 }

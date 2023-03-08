@@ -1,16 +1,14 @@
-import React from "react";
 
-const CompleteTodo = (props: { completeTodos: any; undoCLick: any; }) => {
-    const { completeTodos, undoCLick} = props;
+const CompleteTodo = (props:{completeTodos: any}) => {
+    const { completeTodos} = props;
     return (
         <div className="complete_area">
             <p className="title">完了のTODO</p>
             <ul>
-                {completeTodos.map((todo:  React.Key, index: any) => {
+                {completeTodos.map((todo:any) => {
                     return (
                         <div key={todo} className="list_row">
                             <li>{todo}</li>
-                            <button onClick={() => undoCLick(index)}>戻す</button>
                         </div>
                     );
                 })}

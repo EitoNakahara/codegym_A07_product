@@ -12,14 +12,15 @@ import TaskList from './components/views/TaskList'
 
 function App() {
   const [isAuth, setIsAuth] = useState<boolean>(false);
+  const [completeTodos, setCompleteTodos] = useState([]);
 
   return (
     <Router>
       {isAuth ? <Navbar isAuth={isAuth} /> : <Title />}
       <Routes>
         <Route path='/' element={<Index isAuth={isAuth} />}></Route>
-        <Route path='/home' element={<Home />}></Route>
-        <Route path='/task_list' element={<TaskList />}></Route>
+        <Route path='/home' element={<Home completeTodos={completeTodos}/>}></Route>
+        <Route path='/task_list' element={<TaskList setCompleteTodos={setCompleteTodos} />}></Route>
         <Route path='/signup' element={<SignUp />}></Route>
         <Route path='/login' element={<Login setIsAuth={setIsAuth} />}></Route>
         <Route path='/logout' element={<Logout setIsAuth={setIsAuth} />}></Route>

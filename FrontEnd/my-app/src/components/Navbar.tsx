@@ -3,7 +3,7 @@ import "./style/Navbar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHouse, faFilePen, faRightToBracket, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 
-const Navbar = ({ isAuth }: { isAuth: any }) => {
+const Navbar = (props: { isAuth: any }) => {
     return (
         <nav>
             <Link to="/task_list">
