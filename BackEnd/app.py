@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, flash, session
 from flask_login import LoginManager, login_required, UserMixin, login_user, logout_user
 from flask_wtf.csrf import CSRFProtect
 from sqlalchemy import *
@@ -21,8 +21,8 @@ app = Flask(__name__)
 login_manager = LoginManager()
 login_manager.init_app(app)
 app.config['SECRET_KEY'] = "secret"
-csrf = CSRFProtect(app)
-CORS(app)
+"""csrf = CSRFProtect(app)"""
+"""CORS(app)"""
 
 metadata = MetaData()
 
@@ -61,35 +61,55 @@ if __name__ == "__main__":
 def load_user(user_id):
     return LoginUser.query.filter(LoginUser.id == user_id).one_or_none()
 
-@app.route('/signup', methods=["GET","POST"])
-@cross_origin(origins=["http://localhost:5173"], methods=["GET", "POST"])
+@app.route('/')
+def index():
+    return redirect('/login')
+
+@app.route('/login', methods=['GET'])
+def login():
+    return render_template('login.html')
+
+
+@app.route('/login', methods=['POST'])
+def login_post():
+    input_mail = request.form['mailAddress']
+    input_password = request.form['password']
+
+    if(input_mail == None or input_password == None):
+        return render_template('login.html', error="please enter all content")
+
+    if (session.query(User).filter(input_mail == User.mail).one_or_none() == None):
+        return render_template('login.html', error="No mail found")
+
+    if (session.query(User).filter(input_password == User.password).one_or_none() == None):
+        return render_template('login.html', error="password incorrect")
+
+    return render_template('member.html')
+
+
+@app.route('/signup', methods=['GET'])
 def signup():
+    return redirect('/signup')
 
-    input_mail = request.json.get("mail")
+@app.route('/signup', methods=["POST"])
+def signup_post():
 
-    input_password = request.json.get("pass")
+    input_mail = request.form['mailAddress']
+    input_password = request.form['password']
+    input_rePassword = request.form['re_password']
 
-    if input_mail == None or input_password == None:
-        return {"isRegister": "false"}
+    if input_mail == None or input_password == None or input_rePassword == None:
+        return render_template('signup.html', error="Pease enter all information")
+    
+    if input_password != input_rePassword:
+        return render_template('signup.html', error="rechecking password failed")
     
     user = User(input_mail, input_password) 
     session.add(user)
     session.commit()
 
-    return {"isRegister": "true"}
+    return render_template('login.html', error="signup succeeded!")
 
-@app.route('/login', methods=["GET", "POST"])
-@cross_origin(origins=["http://localhost:5173"], methods=["GET", "POST"])
-def login():
-
-    input_mail = request.json.get("mail")
-    input_password = request.json.get("pass")
-    result = session.query().filter(User.mail == input_mail, User.password == input_password).one_or_none
-
-    if result == None:
-        return {"isAuth": "false"}
-
-    return {"isAuth": "true"}
 
 if __name__ == '__main__':
     app.run(host='localhost', port=8080)

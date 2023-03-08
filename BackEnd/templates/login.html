@@ -7,16 +7,16 @@
 <body>
     <p>{% if error %}{{ error }}{% endif %}</p>
     <form action="/login" method="post">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <div>
-            mail <input type="text" name="mail">
-            password <input type="text" name="password">
+            <label for="mail">メール</label>
+            <input type="text" id="mail" name="mailAddress">
         </div>
         <div>
-            <input type="submit">
+            <label for="pass">パスワード</label>
+            <input type="password" id="pass" name="password">
         </div>
+        <button type="submit">ログイン</button>
     </form>
-    <a href='/signup'>サインアップはこちら</a></li>
+    <a href="./signup.html">サインアップはこちら</a></li>
 </body>
-
 </html>
