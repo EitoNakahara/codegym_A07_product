@@ -1,18 +1,15 @@
 import React from "react";
+import Task from "./task";
 
 const InCompleteTodo = (props: { incompleteTodos: any; completeCLick: any; deleteClick: any; }) => {
     const { incompleteTodos, completeCLick, deleteClick } = props;
     return (
         <div className="incomplete_area">
-            <p className="title">未完了のTODO</p>
+            <p className="title">今日やること一覧</p>
             <ul>
                 {incompleteTodos.map((todo: React.Key, index: any) => {
                     return (
-                        <div key={todo} className="list_row">
-                            <li>{todo}</li>
-                            <button onClick={() => completeCLick(index)}>完了</button>
-                            <button onClick={() => deleteClick(index)}>削除</button>
-                        </div>
+                        <Task todo={todo} index={index} completeCLick={completeCLick} deleteClick={deleteClick} />
                     );
                 })}
             </ul>

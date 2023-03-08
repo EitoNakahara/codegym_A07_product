@@ -1,6 +1,10 @@
+import "./style/Title.css";
+
 const Title = () => {
     return (
-        <div>TaskTower</div>
+        <>
+            <h1>TaskTower</h1>
+        </>
     )
 }
 
