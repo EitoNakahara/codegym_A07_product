@@ -9,7 +9,7 @@ const HelloWorld = () => {
         console.log("change");
     },[name])
 
-    const URL = "http://localhost:5000";
+    const URL = "http://localhost:8080";
 
     const inputText = (event: any) => {
         console.log(event.target.value);

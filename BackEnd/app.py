@@ -22,7 +22,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 app.config['SECRET_KEY'] = "secret"
 csrf = CSRFProtect(app)
-CORS(app)
+CORS(app, supports_credentials=True)
 
 metadata = MetaData()
 
@@ -56,40 +56,47 @@ def main(args):
 #このファイルを直接実行したとき、mainメソッドでテーブルを作成する
 if __name__ == "__main__":
     main(sys.argv)
+    app.run(host='localhost', port=8080)
 
 @login_manager.user_loader
 def load_user(user_id):
     return LoginUser.query.filter(LoginUser.id == user_id).one_or_none()
 
-@app.route('/signup', methods=["GET","POST"])
-@cross_origin(origins=["http://localhost:5173"], methods=["GET", "POST"])
+@app.route('/signup', methods=["POST"])
+@cross_origin(origins=["http://localhost:5173"], methods=["GET","POST"])
 def signup():
+    if request.method == "POST":
 
-    input_mail = request.json.get("mail")
+        input_mail = request.json.get("mail")
 
-    input_password = request.json.get("pass")
+        input_password = request.json.get("pass")
 
-    if input_mail == None or input_password == None:
+        if input_mail == None or input_password == None:
+            return {"isRegister": "false"}
+        
+        user = User(input_mail, input_password) 
+        session.add(user)
+        session.commit()
+
+        return {"isRegister": "true"}
+    else:
         return {"isRegister": "false"}
-    
-    user = User(input_mail, input_password) 
-    session.add(user)
-    session.commit()
 
-    return {"isRegister": "true"}
-
-@app.route('/login', methods=["GET", "POST"])
-@cross_origin(origins=["http://localhost:5173"], methods=["GET", "POST"])
+@app.route('/login', methods=["POST"])
+@cross_origin(origins=["http://localhost:5173"], methods=["GET","POST"])
 def login():
 
-    input_mail = request.json.get("mail")
-    input_password = request.json.get("pass")
-    result = session.query().filter(User.mail == input_mail, User.password == input_password).one_or_none
+    session.clear()
 
-    if result == None:
+    if request.method == "POST":
+
+        input_mail = request.json.get("mail")
+        input_password = request.json.get("pass")
+        result = session.query().filter(User.mail == input_mail, User.password == input_password).one_or_none
+
+        if result == None:
+            return {"isAuth": "false"}
+
+        return {"isAuth": "true"}
+    else:
         return {"isAuth": "false"}
-
-    return {"isAuth": "true"}
-
-if __name__ == '__main__':
-    app.run(host='localhost', port=8080)

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from "react-router-dom";
 
-const SignUp = ({ setIsAuth }: { setIsAuth: any }) => {
+const SignUp = () => {
     const navigate = useNavigate();
 
     const [email, setEmail] = useState('');
@@ -11,22 +11,22 @@ const SignUp = ({ setIsAuth }: { setIsAuth: any }) => {
     const [checkRePass, setCheckRePass] = useState(false);
     const [inputError, setInputError] = useState(false);
 
-    const URL = 'http://127.0.0.1:5000';
+    const URL = 'http://localhost:8080/signup';
 
     const inputEmail = (event: any) => {
         if (email != null) {
             setEmail(event.target.value);
-            setCheckEmail(true);
+            setCheckEmail(false);
         }
-        else { setCheckEmail(false); }
+        else { setCheckEmail(true); }
     }
 
     const inputPass = (event: any) => {
         if (pass != null) {
             setPass(event.target.value);
-            setCheckPass(true);
+            setCheckPass(false);
         }
-        else { setCheckPass(false); }
+        else { setCheckPass(true); }
     }
 
     const inputRePass = (event: any) => {
@@ -49,7 +49,6 @@ const SignUp = ({ setIsAuth }: { setIsAuth: any }) => {
             body: JSON.stringify({ mail: email, pass: pass }), // フロントエンドから送信するデータ
         })
         const json = await response.json(); // バックエンドから受信したデータ
-        setIsAuth[json['isRegister']];
         console.log(json['isRegister']);
 
     }

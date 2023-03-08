@@ -1,7 +1,5 @@
 import "./style/CreatePost.css";
 import { useState } from "react";
-import { addDoc, collection } from "firebase/firestore";
-import { db, auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
 
 const CreatePost = () => {
@@ -11,40 +9,31 @@ const CreatePost = () => {
     const navigate = useNavigate();
 
     const sendPost = async () => {
-        await addDoc(collection(db, "posts"), {
-            title: title,
-            postText: postText,
-            author: {
-                username: auth.currentUser?.displayName,
-                id: auth.currentUser?.uid
-            },
-        })
-
         navigate("/");
     };
 
     return (
         <div className="createPostPage">
             <div className="postContainer">
-                <h1>記事を投稿</h1>
+                <h1>タスクの追加</h1>
                 <div className="inputPost">
-                    <div>タイトル</div>
+                    <div>タスクの種類</div>
                     <input
-                        className="title"
+                        className="kind"
                         type="text"
-                        placeholder="タイトル記入"
+                        placeholder="タスクの種類"
                         onChange={(e) => { setTitle(e.target.value) }}
                     />
                 </div>
                 <div className="inputPost">
-                    <div>投稿記事</div>
+                    <div>タスクの内容</div>
                     <textarea
-                        className="article"
-                        placeholder="投稿内容を記入"
+                        className="content"
+                        placeholder="タスクの内容を記入"
                         onChange={(e) => { setPostText(e.target.value) }}
                     />
                 </div>
-                <button className="postButton" onClick={sendPost}>投稿する</button>
+                <button className="postButton" onClick={sendPost}>タスクの追加</button>
             </div>
         </div>
     )

@@ -6,28 +6,18 @@ import { faHouse, faFilePen, faRightToBracket, faRightFromBracket } from "@forta
 const Navbar = ({ isAuth }: { isAuth: any }) => {
     return (
         <nav>
-            <Link to="/">
+            <Link to="/task_list">
+                <FontAwesomeIcon icon={faFilePen} />
+                タスク一覧
+            </Link>
+            <Link to="/home">
                 <FontAwesomeIcon icon={faHouse} />
                 ホーム
             </Link>
-            <Link to="/create_post">
-                <FontAwesomeIcon icon={faFilePen} />
-                記事投稿
+            <Link to="/logout">
+                <FontAwesomeIcon icon={faRightFromBracket} />
+                ログアウト
             </Link>
-            {!isAuth ?
-                (
-                    <Link to="/login">
-                        <FontAwesomeIcon icon={faRightToBracket} />
-                        ログイン
-                    </Link>
-                ) :
-                (
-                    <Link to="/logout">
-                        <FontAwesomeIcon icon={faRightFromBracket} />
-                        ログアウト
-                    </Link>
-                )
-            }
         </nav>
     )
 }

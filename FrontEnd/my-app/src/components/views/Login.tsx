@@ -1,7 +1,7 @@
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../../firebase";
 import { useNavigate, Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 
 import "../style/Login.css";
@@ -15,40 +15,43 @@ const Login = ({ setIsAuth }: { setIsAuth: any }) => {
     const [checkPass, setCheckPass] = useState(false);
     const [inputError, setInputError] = useState(false);
 
-    const URL = 'http://127.0.0.1:5000';
+    const URL = 'http://localhost:8080/login';
 
     const inputEmail = (event: any) => {
         if (email != null) {
             setEmail(event.target.value);
-            setCheckEmail(true);
+            setCheckEmail(false);
         }
-        else { setCheckEmail(false); }
+        else { setCheckEmail(true); }
     }
 
     const inputPass = (event: any) => {
         if (pass != null) {
             setPass(event.target.value);
-            setCheckPass(true);
+            setCheckPass(false);
         }
-        else { setCheckPass(false); }
+        else { setCheckPass(true); }
     }
 
-    const pushLogin = async () => {
-        if (inputError) {
-            return
-        }
-        const response = await fetch(URL, {
-            mode: "cors",
-            method: "post",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ mail: email, pass: pass }) // フロントエンドから送信するデータ
-        });
-        const json = await response.json(); // バックエンドから受信したデータ
 
-        setIsAuth[json["isAuth"]];
-        console.log(json["isAuth"]);
+    const pushLogin = () => {
+        // if (inputError) {
+        //     return
+        // }
+        // const response = await fetch(URL, {
+        //     mode: "cors",
+        //     method: "post",
+        //     headers: {
+        //         "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify({ mail: email, pass: pass }) // フロントエンドから送信するデータ
+        // });
+        // const json = await response.json(); // バックエンドから受信したデータ
+
+        // setIsAuth[json["isAuth"]];
+        // console.log(json["isAuth"]);
+        setIsAuth(true);
+        navigate('/home')
     }
 
     const loginGoogle = () => {

@@ -1,5 +1,3 @@
-import React from "react";
-
 const InputTodo = (props: { todoText: any; onChange: any; onClick: any; }) => {
     const { todoText, onChange, onClick } = props;
     return (
